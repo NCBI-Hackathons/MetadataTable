@@ -8,7 +8,7 @@ import argparse
 import threading
 from Bio import Entrez
 
-from parse import parse
+from parse import parse, generate_xml_string
 
 # ============================================================================ #
 USAGE = """Usage examples:
@@ -104,7 +104,7 @@ class BlackHole(object):
         pass
 
 
-def Process(q, output_xml, output_tsv, fields, names):
+def Process(q, output_xml, output_tsv, fields, names, queries):
     fx = ft = BlackHole()
     if output_xml:
         fx = open(output_xml, "w", encoding="utf-8")
@@ -120,11 +120,10 @@ def Process(q, output_xml, output_tsv, fields, names):
         if item is TaskDone:
             q.task_done()
             break
-        for tab in parse(item):
+        fx.write(generate_xml_string(item))
+        for tab in parse(item, queries):
             ft.write("\t".join(tab[i] for i in fields))
             ft.write("\n")
-            # fx.write(xml)
-            # fx.write("\n")
         q.task_done()
     if output_xml:
         fx.write("</EXPERIMENT_PACKAGE_SET>\n")
@@ -173,9 +172,11 @@ if __name__ == "__main__":
     if not P.full:
         FIELDS = [index for index, row in enumerate(ALL_FIELDS)]
         NAMES = [row[0] for row in ALL_FIELDS]
+        QUERIES = [row[1] for row in ALL_FIELDS]
     else:
         FIELDS = [index for index, row in enumerate(ALL_FIELDS) if row[2]]
         NAMES = [row[0] for row in ALL_FIELDS if row[2]]
+        QUERIES = [row[1] for row in ALL_FIELDS if row[2]]
 
     # Input Mode 1. Read and process xml file
     if P.input_xml:
@@ -186,7 +187,7 @@ if __name__ == "__main__":
             fo.write("\n")
         else:
             fo = sys.stdout
-        for result in parse(open(P.input_xml, "r", encoding="utf-8")):
+        for result in parse(open(P.input_xml, "r", encoding="utf-8"), QUERIES):
             fo.write("\t".join(result[i] for i in FIELDS))
             fo.write("\n")
         if P.output_tsv:
@@ -197,7 +198,7 @@ if __name__ == "__main__":
         Entrez.tool = "MetadataTable"
         q = queue.Queue()
         # Process the downloaded records in a separate thread
-        t = threading.Thread(target=Process, args=(q, P.output_xml, P.output_tsv, FIELDS, NAMES))
+        t = threading.Thread(target=Process, args=(q, P.output_xml, P.output_tsv, FIELDS, NAMES, QUERIES))
         t.start()
         # Retrieve all ids
         ids = GetIdList(term=" ".join(P.term))[:10]  # TODO
