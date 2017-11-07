@@ -104,7 +104,7 @@ class BlackHole(object):
         pass
 
 
-def Process(q, output_xml, output_tsv, fields, names, queries):
+def Process(q, output_xml, output_tsv, names, queries):
     fx = ft = BlackHole()
     if output_xml:
         fx = open(output_xml, "w", encoding="utf-8")
@@ -121,8 +121,8 @@ def Process(q, output_xml, output_tsv, fields, names, queries):
             q.task_done()
             break
         fx.write(generate_xml_string(item))
-        for tab in parse(item, queries):
-            ft.write("\t".join(tab[i] for i in fields))
+        for row in parse(item, queries):
+            ft.write("\t".join(row))
             ft.write("\n")
         q.task_done()
     if output_xml:
@@ -149,34 +149,32 @@ if __name__ == "__main__":
         sys.stderr.write("Please use either a xml file or search terms as input")
         exit()
 
-    ALL_FIELDS = [
-        ("SRA run accession", "todoquery", True),
-        ("SRA experiment accession", "todoquery", True),
-        # ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "todoquery", True),
-        # ("Tissue", "todoquery", True),
-        # ("Strain", "todoquery", True),
-        # ("Developmental stage", "todoquery", True),
-        # ("SRA project accession", "todoquery", True),
-        # ("Base count of run", "todoquery", True),
-        # ("Spot count of run", "todoquery", True),
-        # ("Paired-end flag", "todoquery", True),
-        # ("Platform (eg Illumina)", "todoquery", True),
-        # ("SRA sample accession", "todoquery", False),
-        # ("Taxid", "todoquery", False),
-        # ("Library source", "todoquery", False),
-        # ("Cell line", "todoquery", False),
-        # ("Sample title", "todoquery", False),
-        # ("Source Provider", "todoquery", False),
-        # ("Study description", "todoquery", False),
+    FIELDS = [  # (Column name, query, default)
+        ("SRA run accession", ("todo",), True),
+        ("SRA experiment accession", ("todo",), True),
+        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", ("todo",), True),
+        ("Tissue", ("todo",), True),
+        ("Strain", ("todo",), True),
+        ("Developmental stage", ("todo",), True),
+        ("SRA project accession", ("todo",), True),
+        ("Base count of run", ("todo",), True),
+        ("Spot count of run", ("todo",), True),
+        ("Paired-end flag", ("todo",), True),
+        ("Platform (eg Illumina)", ("todo",), True),
+        ("SRA sample accession", ("todo",), False),
+        ("Taxid", ("todo",), False),
+        ("Library source", ("todo",), False),
+        ("Cell line", ("todo",), False),
+        ("Sample title", ("todo",), False),
+        ("Source Provider", ("todo",), False),
+        ("Study description", ("todo",), False),
     ]
     if not P.full:
-        FIELDS = [index for index, row in enumerate(ALL_FIELDS)]
-        NAMES = [row[0] for row in ALL_FIELDS]
-        QUERIES = [row[1] for row in ALL_FIELDS]
+        NAMES = [row[0] for row in FIELDS]
+        QUERIES = [row[1] for row in FIELDS]
     else:
-        FIELDS = [index for index, row in enumerate(ALL_FIELDS) if row[2]]
-        NAMES = [row[0] for row in ALL_FIELDS if row[2]]
-        QUERIES = [row[1] for row in ALL_FIELDS if row[2]]
+        NAMES = [row[0] for row in FIELDS if row[2]]
+        QUERIES = [row[1] for row in FIELDS if row[2]]
 
     # Input Mode 1. Read and process xml file
     if P.input_xml:
@@ -188,7 +186,7 @@ if __name__ == "__main__":
         else:
             fo = sys.stdout
         for result in parse(open(P.input_xml, "r", encoding="utf-8"), QUERIES):
-            fo.write("\t".join(result[i] for i in FIELDS))
+            fo.write("\t".join(result))
             fo.write("\n")
         if P.output_tsv:
             fo.close()
@@ -198,7 +196,7 @@ if __name__ == "__main__":
         Entrez.tool = "MetadataTable"
         q = queue.Queue()
         # Process the downloaded records in a separate thread
-        t = threading.Thread(target=Process, args=(q, P.output_xml, P.output_tsv, FIELDS, NAMES, QUERIES))
+        t = threading.Thread(target=Process, args=(q, P.output_xml, P.output_tsv, NAMES, QUERIES))
         t.start()
         # Retrieve all ids
         ids = GetIdList(term=" ".join(P.term))[:10]  # TODO
