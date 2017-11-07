@@ -26,7 +26,7 @@ def parse(file_or_string_to_parse):
                     list_of_values.append(run.find(field[0]).attrib.get(field[1], "NA"))
                 else:
                     list_of_values.append(run.find(field).text)
-            yield list_of_values
+            yield list_of_values, experiment
 
 sra = open("sra1000.xml", "r")
 parse_func = (parse(sra))
