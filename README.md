@@ -1,7 +1,7 @@
 # MetadataTable
 Work on and around an interactive metadata table for sequence submission and modification
 
-# Useage
+# Usage
 ```
 >python metadatatable.py --help
 usage: MetadataTable [-h] -e EMAIL [-ox OUTPUT_XML] [-ot OUTPUT_TSV]
