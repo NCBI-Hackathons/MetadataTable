@@ -151,8 +151,8 @@ if __name__ == "__main__":
 
     FIELDS = [  # (Column name, query, default)
         ("SRA run accession", (".//RUN_SET/RUN", "accession"), True),
-        ("SRA experiment accession", ("../../EXPERIMENT", "accession"), True),
-        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "../../IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", True),
+        ("SRA experiment accession", ("./../../EXPERIMENT", "accession"), True),
+        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "./../..//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", True),
         #("Tissue", ("todo",), True),
         #("Strain", ("todo",), True),
         #("Developmental stage", ("todo",), True),
