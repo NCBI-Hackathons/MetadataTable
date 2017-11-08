@@ -19,8 +19,6 @@ def get_experiment_xml_string(xml_content):
 def parse(file_or_string_to_parse, xpath_list):
     """returns a list of values requested from
        the xpath_list for each run in the xml string or file"""
-    data_array = []
-    exp_dict = {}
     xml_content = _return_file_content(file_or_string_to_parse)
     experiments = get_experiment_xml_string(xml_content)
     for experiment in experiments:
