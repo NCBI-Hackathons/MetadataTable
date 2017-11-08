@@ -7,22 +7,27 @@ Even the type of study is heterogeneous for different submitters. The location o
 ### Why should we solve it?
 Third-party efforts to load all metadata into a relational db suggest how widespread the problem is-- a customizable localized implementation helps many.
 
-## Examples
-
-Pleae note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
-Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
-python3 ../MetadataTable/metadatatable.py -e a@b.com -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv
+## Workflow
+![Workflow](assets/img/workflow.png)
 
 ## Configuration
 
 Requires python3 and python packages noted in requirements.txt
 
-To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named testing <br />
- virtualenv -p python3 testing <br />
- cd testing <br />
- source bin/activate <br />
- pip3 install -r ../MetadataTable/requirements.txt  <br />
- python3 ../MetadataTable/metadatatable.py -h  <br />
+To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named "testing" <br />
+``` virtualenv -p python3 testing 
+ cd testing 
+ source bin/activate 
+ pip3 install -r ../MetadataTable/requirements.txt  
+ python3 ../MetadataTable/metadatatable.py -h  
+ ```
+
+## Example Invocation
+
+``` Please note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
+Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
+python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv 
+``` 
 
 ## Usage
 
@@ -52,7 +57,7 @@ optional arguments:
                         Path to a csv file for xpath query
 ```
 
-## Command
+## Commands
 **Input mode**
 
 Users can choose which input mode they want. These two modes cannot be used together.
@@ -60,7 +65,7 @@ Users can choose which input mode they want. These two modes cannot be used toge
     -i input.xml
     Use a xml file as input.
 
-    -e email@nih.gov -t searchterm
+    -e <your_email> -t searchterm
     Query Entrez using the terms specified by -t.
 
 **Output mode**
@@ -77,7 +82,7 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     -ot output.tsv
     Save parsed records in a tsv file.
 
-**Retrieving**
+**Retrieval**
 
     -u
     Retrieve unlimited records. If not used, metadatatable will abort if
@@ -97,6 +102,8 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     If supplied, metadatatable will use read the xpath query from the
     specified csv file, and -c and -f will be silently ignored.
 
-## Link to DOI
+## Contributors
 
-TODO
+Tara Tufano <br />
+Lukas Wagner <br />
+Yadi Zhou
