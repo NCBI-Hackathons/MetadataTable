@@ -76,7 +76,7 @@ BUILTIN_XPATH = {
         ("Development Stage", ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='developmental stage']/VALUE|//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='DevelopmentalStage']/VALUE", None), True),
         ("SRA project accession", ("//STUDY_REF", "accession"), True),
         ("Base count of run", ("//RUN", "total_bases"), True),
-        #("Paired-end flag", ("todo",), True),
+        ("Paired-end flag", ("//PAIRED","*"), True),
         ("Spot count of run", ("//RUN", "total_spots"), True),
         ("Platform (eg Illumina)", ("//PLATFORM/*/*|//PLATFORM/*", None), True),
         ("SRA sample accession", ("//SAMPLE","accession"), False),
@@ -243,7 +243,7 @@ if __name__ == "__main__":
         Entrez.tool = "MetadataTable"
 
         # Retrieve all ids
-        ids = GetIdList(term=" ".join(P.term))[:100]  # TODO
+        ids = GetIdList(term=" ".join(P.term))
         if len(ids) > ESEARCH_MAX:
             sys.stderr.write("Query returned too many results (%s). Please consider refine you search or use -u option" % len(ids))
             exit(1)
