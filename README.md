@@ -1,6 +1,18 @@
 # MetadataTable
+SRA Metadata is rich, sometimes too rich. There's no single standardized location for many types of useful information. This is a generalizable framework for pullking SRA metadata and summarizing usefully, with some common use-cases ready to go.
+
+### What's the problem?
+Even the type of study is heterogeneous for different submitters. The location of for instance tissue and developmental stage specifications within SRA metadata also varies, as do the values used to describe particular tissues.
+
+### Why should we solve it?
+Third-party efforts to load all metadata into a relational db suggest how widespread the problem is-- a customizable localized implementation helps many.
+
+## Examples
+
+TODO
 
 ## Usage
+
 ```
 >python metadatatable.py -h
 usage: MetadataTable [-h] [-ox OUTPUT_XML] [-ot OUTPUT_TSV] [-i INPUT_XML]
@@ -27,11 +39,7 @@ optional arguments:
                         Path to a csv file for xpath query
 ```
 
-#### Examples
-
-TODO
-
-#### Command
+## Command
 **Input mode**
 
 Users can choose which input mode they want. These two modes cannot be used together.
@@ -75,3 +83,7 @@ Users can save both xml and tsv file, if filenames are given.
     -x xpath.csv
     If supplied, metadatatable will use read the xpath query from the
     specified csv file, and -c and -f will be silently ignored.
+
+## Link to DOI
+
+TODO
