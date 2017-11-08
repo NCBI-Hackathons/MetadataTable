@@ -66,4 +66,3 @@ Users can save both xml and tsv file, if filenames are given.
 
     -x xpath.csv
     If supplied, metadatatable will use read the xpath query from the specified csv file, and -c and -f will be silently ignored.
-
