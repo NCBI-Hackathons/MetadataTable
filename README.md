@@ -27,6 +27,10 @@ optional arguments:
                         Path to a csv file for xpath query
 ```
 
+#### Examples
+
+TODO
+
 #### Command
 **Input mode**
 
@@ -43,7 +47,8 @@ Users can choose which input mode they want. These two modes cannot be used toge
 Users can save both xml and tsv file, if filenames are given.
 
     (blank)
-    If no output mode specified, metadatatable will print out the parsed results.
+    If no output mode specified, metadatatable will print out the parsed
+    results.
 
     -ox output.xml
     Save downloaded records in a xml file.
@@ -54,15 +59,19 @@ Users can save both xml and tsv file, if filenames are given.
 **Retrieving**
 
     -u
-    Retrieve unlimited records. If not used, metadatatable will abort if the results from querying Entrez are more then 1,000,000
+    Retrieve unlimited records. If not used, metadatatable will abort if
+    the results from querying Entrez are more then 1,000,000
 
 **Parsing**
 
     -c case
-    Use built-in parsing template. Choose from (case1, case2). Default is case1.
+    Use built-in parsing template. Choose from (case1, case2). Default
+    is case1.
 
     -f
-    For built-in parsing template only. Output the full table. It will be silently ignored if using user supplied xpath file.
+    For built-in parsing template only. Output the full table. It will
+    be silently ignored if using user supplied xpath file.
 
     -x xpath.csv
-    If supplied, metadatatable will use read the xpath query from the specified csv file, and -c and -f will be silently ignored.
+    If supplied, metadatatable will use read the xpath query from the
+    specified csv file, and -c and -f will be silently ignored.
