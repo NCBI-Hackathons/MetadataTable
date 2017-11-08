@@ -37,7 +37,7 @@ def parse(file_or_string_to_parse, xpath_list):
                 else:
                     el = run.find(field)
                     if el is not None:
-                        list_of_values.append(el, "NA")
+                        list_of_values.append(el.text)
                 if el is None:
                     list_of_values.append("NA")
             yield list_of_values #yields a list for each run
