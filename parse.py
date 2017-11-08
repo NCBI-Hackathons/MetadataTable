@@ -30,8 +30,14 @@ def parse(file_or_string_to_parse, xpath_list):
         list_of_values = []
         for run in runs:
             for field in xpath_list:
-                if isinstance(field, tuple): #checks if the xpath is a tuple with an attribute
-                    list_of_values.append(run.find(field[0]).attrib.get(field[1], "NA")) #obtains the attribute
+                if isinstance(field, tuple):
+                    el = run.find(field[0])
+                    if el is not None:
+                        list_of_values.append(el.attrib.get(field[1], "NA"))
                 else:
-                    list_of_values.append(run.find(field).text) #adds all values to a list
+                    el = run.find(field)
+                    if el is not None:
+                        list_of_values.append(el, "NA")
+                if el is None:
+                    list_of_values.append("NA")
             yield list_of_values #yields a list for each run
