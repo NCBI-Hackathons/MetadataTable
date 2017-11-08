@@ -30,12 +30,16 @@ def parse(file_or_string_to_parse, parse_list):
         for run in runs:
             list_of_values = []
             for parse_item in parse_list:
-                run_container = re.search(r'(RUN\b)|(RUN\/)', parse_item[0])
-                if not run_container:
-                    xpath = "./../.." + parse_item[0]
-                else:
-                    xpath = "." + parse_item[0][run_container.end():]
-                el = run.find(xpath)
+                xpaths = parse_item[0].split("|")
+                el = None
+                for xpath in xpaths:
+                    run_container = re.search(r'(RUN\b)|(RUN\/)', xpath)
+                    if not run_container:
+                        xpath = "./../.." + xpath
+                    else:
+                        xpath = "." + xpath[run_container.end():]
+                    el = run.find(xpath)
+                    break
                 if el is None:
                     list_of_values.append("NA")
                 elif parse_item[1]:
