@@ -15,11 +15,11 @@ Third-party efforts to load all metadata into a relational db suggest how widesp
 Requires python3 and python packages noted in requirements.txt
 
 To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named "testing" <br />
-``` virtualenv -p python3 testing <br />
- cd testing <br />
- source bin/activate <br />
- pip3 install -r ../MetadataTable/requirements.txt  <br />
- python3 ../MetadataTable/metadatatable.py -h  <br />
+``` virtualenv -p python3 testing 
+ cd testing 
+ source bin/activate 
+ pip3 install -r ../MetadataTable/requirements.txt  
+ python3 ../MetadataTable/metadatatable.py -h  
  ```
 
 ## Example Invocation
@@ -102,3 +102,8 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     If supplied, metadatatable will use read the xpath query from the
     specified csv file, and -c and -f will be silently ignored.
 
+## Contributors
+
+Tara Tufano
+Lukas Wagner
+Yadi Zhou
