@@ -26,7 +26,8 @@ To get started, git clone to subdirectory MetadataTable, and create a working su
 
 ``` Please note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
 Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
-python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv ``` 
+python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv 
+``` 
 
 ## Usage
 
@@ -56,7 +57,7 @@ optional arguments:
                         Path to a csv file for xpath query
 ```
 
-## Command
+## Commands
 **Input mode**
 
 Users can choose which input mode they want. These two modes cannot be used together.
@@ -64,7 +65,7 @@ Users can choose which input mode they want. These two modes cannot be used toge
     -i input.xml
     Use a xml file as input.
 
-    -e email@nih.gov -t searchterm
+    -e <your_email> -t searchterm
     Query Entrez using the terms specified by -t.
 
 **Output mode**
@@ -81,7 +82,7 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     -ot output.tsv
     Save parsed records in a tsv file.
 
-**Retrieving**
+**Retrieval**
 
     -u
     Retrieve unlimited records. If not used, metadatatable will abort if
@@ -101,6 +102,3 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     If supplied, metadatatable will use read the xpath query from the
     specified csv file, and -c and -f will be silently ignored.
 
-## Link to DOI
-
-TODO
