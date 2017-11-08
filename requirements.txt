@@ -1,2 +1,3 @@
 import lxml
 import pytest
+import biopython
