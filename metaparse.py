@@ -19,7 +19,7 @@ def get_experiment_xml_string(xml_content):
     return corrected_experiments
 
 
-def parse(file_or_string_to_parse, xpath_list):
+def parse(file_or_string_to_parse, parse_list):
     """returns a list of values requested from
        the xpath_list for each run in the xml string or file"""
     xml_content = _return_file_content(file_or_string_to_parse)
@@ -27,17 +27,19 @@ def parse(file_or_string_to_parse, xpath_list):
     for experiment in experiments:
         tree = etree.fromstring(experiment) #loads each experiment into a tree
         runs = tree.findall(".//RUN_SET/RUN") #obtains all runs from the experiment
-        list_of_values = []
         for i, run in enumerate(runs):
             list_of_values = []
-            print(i)
-            for field in xpath_list:
-                run_relative_xpath = "./../.." + field[0]
-                el = run.find(run_relative_xpath)
+            for parse_item in parse_list:
+                run_container = re.search(r'(RUN\b)|(RUN\/)', parse_item[0])
+                if not run_container:
+                    xpath = "./../.." + parse_item[0]
+                else:
+                    xpath = "." + parse_item[0][run_container.end():]
+                el = run.find(xpath)
                 if el is None:
                     list_of_values.append("NA")
-                elif field[1]:
-                        list_of_values.append(el.attrib.get(field[1], "NA"))
+                elif parse_item[1]:
+                        list_of_values.append(el.attrib.get(parse_item[1], "NA"))
                 else:
                         list_of_values.append(el.text)
 
