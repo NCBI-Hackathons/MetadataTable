@@ -1,41 +1,89 @@
 # MetadataTable
-Command line resource to retrieve a subset of SRA metadata in table form.  Intended to be easily modifiable and flexible so that users can identify SRA projects of interest.
+SRA Metadata is rich, sometimes too rich. There's no single standardized location for many types of useful information. This is a generalizable framework for pullking SRA metadata and summarizing usefully, with some common use-cases ready to go.
 
-# What's the problem?
-Researchers who seek to identify SRA projects of interest using more detailed criteria than those supported by Entrez often implement their own scripted or database solution to examine metadata of many studies.  This script allows researchers uninterested in scripting to retrieve a summary of SRA metadata for many studies.  For example, one seeks to browse all RNA-seq studies from a particular organism to identify those that include a particular tissue or developmental stage.  This particular example is preconfigured in the script.  
+### What's the problem?
+Even the type of study is heterogeneous for different submitters. The location of for instance tissue and developmental stage specifications within SRA metadata also varies, as do the values used to describe particular tissues.
 
-One technical obstacle to easily querying SRA is the heterogeneity of the data.  There are for example several ways to specify that a study contains RNA-Seq rather than WGS or exome data, and further several ways to identify that an SRA sample consists of a tissue of interest.  For some researchers, several terms are necesary to write a biologically useful query to retrieve ALL SRA entities of interest, rather than just those which satisfy a single specification.  For RNA-Seq studies and samples originating from particular tissues, the synonymous terms are preset.  Interested users can override the defaults or modify the relatively straightforward code in this repository.  
+### Why should we solve it?
+Third-party efforts to load all metadata into a relational db suggest how widespread the problem is-- a customizable localized implementation helps many.
 
-For users interested to identify terms of interest-- browsing the SAMPLE_ATTRIBUTE fields of selected SRA records is often a useful way to identify how studies are described.
+## Examples
 
+TODO
 
-# Usage
+## Usage
+
 ```
->python metadatatable.py --help
-usage: MetadataTable [-h] -e EMAIL [-ox OUTPUT_XML] [-ot OUTPUT_TSV]
-                     [-i INPUT_XML]
-                     term [term ...]
-
-Usage examples:
-python metadatatable.py -e myemail@ncbi.gov -ox raw.xml -ot parsed.tsv biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]
-python metadatatable.py -e myemail@ncbi.gov -ox raw.xml -ot parsed.tsv strategy_rna_seq[properties]
-python metadatatable.py -e myemail@ncbi.gov -ox raw.xml strategy_rna_seq[properties]
-python metadatatable.py -e myemail@ncbi.gov -ot parsed.tsv strategy_rna_seq[properties]
-python metadatatable.py -e myemail@ncbi.gov strategy_rna_seq[properties]
-python metadatatable.py -e myemail@ncbi.gov -i myown.xml -ot parsed.tsv
-python metadatatable.py -e myemail@ncbi.gov -i myown.xml
-
-positional arguments:
-  term                  Query terms
+>python metadatatable.py -h
+usage: MetadataTable [-h] [-ox OUTPUT_XML] [-ot OUTPUT_TSV] [-i INPUT_XML]
+                     [-e EMAIL] [-t TERM [TERM ...]] [-u] [-c {rnaseq,source}]
+                     [-f] [-x XPATH]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -e EMAIL, --email EMAIL
-                        Let NCBI know who you are
   -ox OUTPUT_XML, --output_xml OUTPUT_XML
                         Path for saving xml file
   -ot OUTPUT_TSV, --output_tsv OUTPUT_TSV
                         Path for saving parsed file
   -i INPUT_XML, --input_xml INPUT_XML
                         Path to input file
+  -e EMAIL, --email EMAIL
+                        Let NCBI know who you are (required)
+  -t TERM [TERM ...], --term TERM [TERM ...]
+                        Query terms
+  -u, --unlimited       Retrieve unlimited records
+  -c {rnaseq,source}, --case {rnaseq,source}
+                        Select which builtin case to use
+  -f, --full            Whether to output full table (Only for builtin template)
+  -x XPATH, --xpath XPATH
+                        Path to a csv file for xpath query
 ```
+
+## Command
+**Input mode**
+
+Users can choose which input mode they want. These two modes cannot be used together.
+
+    -i input.xml
+    Use a xml file as input.
+
+    -e email@nih.gov -t searchterm
+    Query Entrez using the terms specified by -t.
+
+**Output mode**
+
+Users can save both xml and tsv file, if filenames are given.
+
+    (blank)
+    If no output mode specified, metadatatable will print out the parsed
+    results.
+
+    -ox output.xml
+    Save downloaded records in a xml file.
+
+    -ot output.tsv
+    Save parsed records in a tsv file.
+
+**Retrieving**
+
+    -u
+    Retrieve unlimited records. If not used, metadatatable will abort if
+    the results from querying Entrez are more then 100,000
+
+**Parsing**
+
+    -c case
+    Use built-in parsing template. Choose from (rnaseq, source). Default
+    is rnaseq.
+
+    -f
+    For built-in parsing template only. Output the full table. It will
+    be silently ignored if using user supplied xpath file.
+
+    -x xpath.csv
+    If supplied, metadatatable will use read the xpath query from the
+    specified csv file, and -c and -f will be silently ignored.
+
+## Link to DOI
+
+TODO
