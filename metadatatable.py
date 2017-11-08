@@ -69,9 +69,9 @@ parser.add_argument("-x", "--xpath",
 
 TEMPLATE = {  # TODO
     "case1": [
-        ("SRA run accession", (".", "accession"), True),
-        ("SRA experiment accession", ("./../../EXPERIMENT", "accession", "accession"), True),
-        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "./../..//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", True),
+        ("SRA run accession", ("//RUN_SET/RUN", "accession"), True),
+        ("SRA experiment accession", ("//EXPERIMENT", "accession", "accession"), True),
+        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", True),
         # ("Tissue", ("todo",), True),
         # ("Strain", ("todo",), True),
         # ("Developmental stage", ("todo",), True),
@@ -243,7 +243,7 @@ if __name__ == "__main__":
         Entrez.tool = "MetadataTable"
 
         # Retrieve all ids
-        ids = GetIdList(term=" ".join(P.term))  # TODO
+        ids = GetIdList(term=" ".join(P.term))[:1000]  # TODO
         if len(ids) > ESEARCH_MAX:
             print("Query returned too many results. Please consider refine you search or use -u option")
             exit(1)
