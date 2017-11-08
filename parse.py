@@ -13,7 +13,7 @@ def get_experiment_xml_string(xml_content):
     return experiments[1:]
 
 
-def parse(file_or_string_to_parse):
+def parse(file_or_string_to_parse, xpath_list):
     data_array = []
     exp_dict = {}
     xml_content = _return_file_content(file_or_string_to_parse)
@@ -24,8 +24,7 @@ def parse(file_or_string_to_parse):
         runs = tree.findall(".//RUN_SET/RUN")
         list_of_values = []
         for run in runs:
-            for field in [("./../..//STUDY_REF", "accession"),
-                          (".","total_spots")]:
+            for field in xpath_list:
                 if isinstance(field, tuple):
                     list_of_values.append(run.find(field[0]).attrib.get(field[1], "NA"))
                 else:
