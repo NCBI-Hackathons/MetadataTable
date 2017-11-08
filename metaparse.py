@@ -27,7 +27,7 @@ def parse(file_or_string_to_parse, parse_list):
     for experiment in experiments:
         tree = etree.fromstring(experiment) #loads each experiment into a tree
         runs = tree.findall(".//RUN_SET/RUN") #obtains all runs from the experiment
-        for i, run in enumerate(runs):
+        for run in runs:
             list_of_values = []
             for parse_item in parse_list:
                 run_container = re.search(r'(RUN\b)|(RUN\/)', parse_item[0])
