@@ -16,7 +16,7 @@ TODO
 ```
 >python metadatatable.py -h
 usage: MetadataTable [-h] [-ox OUTPUT_XML] [-ot OUTPUT_TSV] [-i INPUT_XML]
-                     [-e EMAIL] [-t TERM [TERM ...]] [-u] [-c {case1,case2}]
+                     [-e EMAIL] [-t TERM [TERM ...]] [-u] [-c {rnaseq,source}]
                      [-f] [-x XPATH]
 
 optional arguments:
@@ -32,7 +32,7 @@ optional arguments:
   -t TERM [TERM ...], --term TERM [TERM ...]
                         Query terms
   -u, --unlimited       Retrieve unlimited records
-  -c {case1,case2}, --case {case1,case2}
+  -c {rnaseq,source}, --case {rnaseq,source}
                         Select which builtin case to use
   -f, --full            Whether to output full table (Only for builtin template)
   -x XPATH, --xpath XPATH
@@ -68,13 +68,13 @@ Users can save both xml and tsv file, if filenames are given.
 
     -u
     Retrieve unlimited records. If not used, metadatatable will abort if
-    the results from querying Entrez are more then 1,000,000
+    the results from querying Entrez are more then 100,000
 
 **Parsing**
 
     -c case
-    Use built-in parsing template. Choose from (case1, case2). Default
-    is case1.
+    Use built-in parsing template. Choose from (rnaseq, source). Default
+    is rnaseq.
 
     -f
     For built-in parsing template only. Output the full table. It will

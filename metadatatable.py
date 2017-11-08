@@ -9,6 +9,7 @@ import argparse
 import threading
 from Bio import Entrez
 from metaparse import parse, get_experiment_xml_string
+from metatestxml import TEST_XML
 
 # ============================================================================ #
 USAGE = """Usage examples:
@@ -39,7 +40,7 @@ parser.add_argument("-i", "--input_xml",
 
 parser.add_argument("-e", "--email",
                     type=str,
-                    help="Let NCBI know who you are (required)")
+                    help="Let NCBI know who you are (required if using -t)")
 
 parser.add_argument("-t", "--term",
                     nargs="+",
@@ -50,10 +51,10 @@ parser.add_argument("-u", "--unlimited",
                     action="store_true",
                     help="Retrieve unlimited records")
 
-parser.add_argument("-c", "--case",  # TODO
+parser.add_argument("-c", "--case",
                     type=str,
-                    default="case1",
-                    choices=("case1", "case2"),
+                    default="rnaseq",
+                    choices=("rnaseq", "source"),
                     help="Select which builtin case to use")
 
 parser.add_argument("-f", "--full",
@@ -65,10 +66,8 @@ parser.add_argument("-x", "--xpath",
                     help="Path to a csv file for xpath query")
 
 # ============================================================================ #
-# Builtin use case 1: TODO
-
-TEMPLATE = {  # TODO
-    "case1": [
+BUILTIN_XPATH = {
+    "rnaseq": [
         ("SRA run accession", ("//RUN_SET/RUN", "accession"), True),
         ("SRA experiment accession", ("//EXPERIMENT", "accession", "accession"), True),
         ("Biosample accession (1-to-1 with SRA sample accession when both exist)", ("//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", None), True),
@@ -88,15 +87,14 @@ TEMPLATE = {  # TODO
         # ("Source Provider", ("todo",), False),
         # ("Study description", ("todo",), False),
     ],
-    "case2": [
+    "source": [
     ],
 }
 
 # ============================================================================ #
 ESEARCH_BATCH = 100000  # max=100,000
 EFETCH_BATCH = 1000  # max=10,000
-
-ESEARCH_MAX = ESEARCH_BATCH * 10
+ESEARCH_MAX = ESEARCH_BATCH
 
 
 def Wait(lastTime):  # Please do not post more than three URL requests per second.
@@ -168,6 +166,7 @@ def Process(q, output_xml, output_tsv, names, queries):
         for row in parse(item, queries):
             ft.write("\t".join(row))
             ft.write("\n")
+            ft.flush()
         q.task_done()
     if output_xml:
         fx.write("</EXPERIMENT_PACKAGE_SET>\n")
@@ -180,20 +179,23 @@ def Process(q, output_xml, output_tsv, names, queries):
 if __name__ == "__main__":
     P, _ = parser.parse_known_args()
 
-    print("P.output_xml", P.output_xml)
-    print("P.output_tsv", P.output_tsv)
-    print("P.input_xml", P.input_xml)
-    print("P.email", P.email)
-    print("P.term", P.term)
-    print("P.unlimited", P.unlimited)
-    print("P.case", P.case)
-    print("P.full", P.full)
-    print("P.xpath", P.xpath)
+    # print("P.output_xml", P.output_xml)
+    # print("P.output_tsv", P.output_tsv)
+    # print("P.input_xml", P.input_xml)
+    # print("P.email", P.email)
+    # print("P.term", P.term)
+    # print("P.unlimited", P.unlimited)
+    # print("P.case", P.case)
+    # print("P.full", P.full)
+    # print("P.xpath", P.xpath)
     # exit()
 
     # Only one input mode is allowed to avoid confusion
     if P.input_xml and P.term:
         sys.stderr.write("Please use either a xml file or search terms as input")
+        exit(1)
+    if P.term and not P.email:
+        sys.stderr.write("Email is required for querying Entrez")
         exit(1)
 
     # Set the field names and queries
@@ -201,20 +203,17 @@ if __name__ == "__main__":
         NAMES = []
         QUERIES = []
         with open(P.xpath, newline="", encoding="utf-8") as csvfile:
-            cf = csv.reader(csvfile)
-            for row in cf:
+            for row in csv.reader(csvfile):
                 NAMES.append(row[0])
-                QUERIES.append((row[1], row[2] if len(row) == 3 else None))  # TODO
-        # TODO test user xpath
-        # try:
-        for p in parse(open("sra1000.xml", encoding="utf-8"), QUERIES):  # TODO
-            pass
-            # except Exception as e:
-            #     print("xpath wrong!")  # TODO
-            #     print(e)  # TODO
-            #     exit(1)
+                QUERIES.append((row[1], row[2] if len(row) == 3 and row[2] else None))
+        try:
+            for _ in parse(TEST_XML, QUERIES):
+                pass
+        except Exception as e:
+            sys.stderr.write("Xpath test failed. Please check the xpath file.")
+            exit(1)
     else:
-        fields = TEMPLATE[P.case]
+        fields = BUILTIN_XPATH[P.case]
         if P.full:
             NAMES = [row[0] for row in fields if row[2]]
             QUERIES = [row[1] for row in fields if row[2]]
@@ -234,6 +233,7 @@ if __name__ == "__main__":
             for result in parse(fi, QUERIES):
                 fo.write("\t".join(result))
                 fo.write("\n")
+                fo.flush()
         if P.output_tsv:
             fo.close()
 
@@ -243,9 +243,9 @@ if __name__ == "__main__":
         Entrez.tool = "MetadataTable"
 
         # Retrieve all ids
-        ids = GetIdList(term=" ".join(P.term))[:2000]  # TODO
+        ids = GetIdList(term=" ".join(P.term))[:100]  # TODO
         if len(ids) > ESEARCH_MAX:
-            print("Query returned too many results. Please consider refine you search or use -u option")
+            sys.stderr.write("Query returned too many results (%s). Please consider refine you search or use -u option" % len(ids))
             exit(1)
 
         # Process the downloaded records in a separate thread
