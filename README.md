@@ -14,7 +14,7 @@ Third-party efforts to load all metadata into a relational db suggest how widesp
 
 Requires python3 and python packages noted in requirements.txt
 
-To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named testing <br />
+To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named "testing" <br />
 ``` virtualenv -p python3 testing <br />
  cd testing <br />
  source bin/activate <br />
