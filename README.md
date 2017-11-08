@@ -7,6 +7,9 @@ Even the type of study is heterogeneous for different submitters. The location o
 ### Why should we solve it?
 Third-party efforts to load all metadata into a relational db suggest how widespread the problem is-- a customizable localized implementation helps many.
 
+## Workflow
+![Workflow](assets/img/workflow.png)
+
 ## Examples
 
 Pleae note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
