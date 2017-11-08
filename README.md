@@ -10,12 +10,6 @@ Third-party efforts to load all metadata into a relational db suggest how widesp
 ## Workflow
 ![Workflow](assets/img/workflow.png)
 
-## Examples
-
-Pleae note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
-Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
-python3 ../MetadataTable/metadatatable.py -e a@b.com -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv
-
 ## Configuration
 
 Requires python3 and python packages noted in requirements.txt
@@ -26,6 +20,12 @@ To get started, git clone to subdirectory MetadataTable, and create a working su
  source bin/activate <br />
  pip3 install -r ../MetadataTable/requirements.txt  <br />
  python3 ../MetadataTable/metadatatable.py -h  <br />
+
+## Example Invocation
+
+```Please note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
+Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
+python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv``` 
 
 ## Usage
 
