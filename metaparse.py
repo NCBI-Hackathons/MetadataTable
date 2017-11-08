@@ -43,8 +43,10 @@ def parse(file_or_string_to_parse, parse_list):
                 if el is None:
                     list_of_values.append("NA")
                 elif parse_item[1]:
-                        list_of_values.append(el.attrib.get(parse_item[1], "NA"))
+                    list_of_values.append(el.attrib.get(parse_item[1], "NA"))
+                elif el.text:
+                    list_of_values.append(el.text)
                 else:
-                        list_of_values.append(el.text)
+                    list_of_values.append("NA")
 
             yield list_of_values #yields a list for each run
