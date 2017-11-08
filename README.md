@@ -104,6 +104,6 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
 
 ## Contributors
 
-Tara Tufano
-Lukas Wagner
+Tara Tufano <br />
+Lukas Wagner <br />
 Yadi Zhou
