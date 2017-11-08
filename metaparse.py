@@ -28,9 +28,12 @@ def parse(file_or_string_to_parse, xpath_list):
         tree = etree.fromstring(experiment) #loads each experiment into a tree
         runs = tree.findall(".//RUN_SET/RUN") #obtains all runs from the experiment
         list_of_values = []
-        for run in runs:
+        for i, run in enumerate(runs):
+            list_of_values = []
+            print(i)
             for field in xpath_list:
-                el = run.find(field[0])
+                run_relative_xpath = "./../.." + field[0]
+                el = run.find(run_relative_xpath)
                 if el is None:
                     list_of_values.append("NA")
                 elif field[1]:

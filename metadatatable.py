@@ -71,7 +71,7 @@ TEMPLATE = {  # TODO
     "case1": [
         ("SRA run accession", ("//RUN_SET/RUN", "accession"), True),
         ("SRA experiment accession", ("//EXPERIMENT", "accession", "accession"), True),
-        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", "//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", True),
+        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", ("//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", None), True),
         # ("Tissue", ("todo",), True),
         # ("Strain", ("todo",), True),
         # ("Developmental stage", ("todo",), True),
@@ -178,7 +178,6 @@ def Process(q, output_xml, output_tsv, names, queries):
 
 # ============================================================================ #
 if __name__ == "__main__":
-    # parsed, _ = parser.parse_known_args("-e yourmail@here.com -ox sra1000.xml txid112509[Organism:exp]".split())
     P, _ = parser.parse_known_args()
 
     print("P.output_xml", P.output_xml)
@@ -192,10 +191,12 @@ if __name__ == "__main__":
     print("P.xpath", P.xpath)
     # exit()
 
+    # Only one input mode is allowed to avoid confusion
     if P.input_xml and P.term:
         sys.stderr.write("Please use either a xml file or search terms as input")
         exit(1)
 
+    # Set the field names and queries
     if P.xpath:
         NAMES = []
         QUERIES = []
@@ -203,28 +204,26 @@ if __name__ == "__main__":
             cf = csv.reader(csvfile)
             for row in cf:
                 NAMES.append(row[0])
-                QUERIES.append((row[1], row[2]))  # TODO
+                QUERIES.append((row[1], row[2] if len(row) == 3 else None))  # TODO
         # TODO test user xpath
         # try:
         for p in parse(open("sra1000.xml", encoding="utf-8"), QUERIES):  # TODO
             pass
-        # except Exception as e:
-        #     print("xpath wrong!")  # TODO
-        #     print(e)  # TODO
-        #     exit(1)
-        exit()
+            # except Exception as e:
+            #     print("xpath wrong!")  # TODO
+            #     print(e)  # TODO
+            #     exit(1)
     else:
         fields = TEMPLATE[P.case]
-        if not P.full:
-            NAMES = [row[0] for row in fields]
-            QUERIES = [row[1] for row in fields]
-        else:
+        if P.full:
             NAMES = [row[0] for row in fields if row[2]]
             QUERIES = [row[1] for row in fields if row[2]]
+        else:
+            NAMES = [row[0] for row in fields]
+            QUERIES = [row[1] for row in fields]
 
-    # Input Mode 1. Read and process xml file
+    # Input Mode 1. Read and process xml file, save parsed data to a file or print out parsed data
     if P.input_xml:
-        # Save parsed data to a file or just print out parsed data
         if P.output_tsv:
             fo = open(P.output_tsv, "w", encoding="utf-8")
             fo.write("\t".join(NAMES))
@@ -237,13 +236,14 @@ if __name__ == "__main__":
                 fo.write("\n")
         if P.output_tsv:
             fo.close()
+
     # Input Mode 2. Query Entrez and parse on the fly
     elif P.term:
         Entrez.email = P.email
         Entrez.tool = "MetadataTable"
 
         # Retrieve all ids
-        ids = GetIdList(term=" ".join(P.term))[:1000]  # TODO
+        ids = GetIdList(term=" ".join(P.term))[:2000]  # TODO
         if len(ids) > ESEARCH_MAX:
             print("Query returned too many results. Please consider refine you search or use -u option")
             exit(1)
@@ -260,3 +260,5 @@ if __name__ == "__main__":
 
         # Wait till all records are processed
         q.join()
+
+    exit(0)
