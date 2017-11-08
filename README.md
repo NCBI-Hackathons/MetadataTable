@@ -1,5 +1,5 @@
 # MetadataTable
-SRA Metadata is rich, sometimes too rich. There's no single standardized location for many types of useful information. This is a generalizable framework for pullking SRA metadata and summarizing usefully, with some common use-cases ready to go.
+SRA Metadata is rich, sometimes too rich. There's no single standardized location for many types of useful information. This is a generalizable framework for pulling SRA metadata and summarizing usefully, with some common use-cases ready to go.
 
 ### What's the problem?
 Even the type of study is heterogeneous for different submitters. The location of for instance tissue and developmental stage specifications within SRA metadata also varies, as do the values used to describe particular tissues.
@@ -9,7 +9,18 @@ Third-party efforts to load all metadata into a relational db suggest how widesp
 
 ## Examples
 
-TODO
+Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : python3 ../MetadataTable/metadatatable.py -e a@b.com -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv
+
+## Configuration
+
+Requires python3 and python packages noted in requirements.txt
+
+To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named testing
+ virtualenv -p python3 testing
+ cd testing
+ source bin/activate
+ pip3 install -r ../MetadataTable/requirements.txt 
+ python3 ../MetadataTable/metadatatable.py -h 
 
 ## Usage
 
@@ -52,7 +63,7 @@ Users can choose which input mode they want. These two modes cannot be used toge
 
 **Output mode**
 
-Users can save both xml and tsv file, if filenames are given.
+Users can save both xml and tsv file, if filenames are given.  xml output can be large, it can be convenient to have a local copy while exploring which summary fields are informative.
 
     (blank)
     If no output mode specified, metadatatable will print out the parsed
