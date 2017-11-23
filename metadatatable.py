@@ -76,10 +76,10 @@ BUILTIN_XPATH = {
         ("Development Stage", ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='developmental stage']/VALUE|//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='DevelopmentalStage']/VALUE", None), True),
         ("SRA project accession", ("//STUDY_REF", "accession"), True),
         ("Base count of run", ("//RUN", "total_bases"), True),
-        ("Paired-end flag", ("//PAIRED","*"), True),
+        ("Paired-end flag", ("//PAIRED", "*"), True),
         ("Spot count of run", ("//RUN", "total_spots"), True),
         ("Platform (eg Illumina)", ("//PLATFORM/*/*|//PLATFORM/*", None), True),
-        ("SRA sample accession", ("//SAMPLE","accession"), False),
+        ("SRA sample accession", ("//SAMPLE", "accession"), False),
         # ("Taxid", ("todo",), False),
         # ("Library source", ("todo",), False),
         # ("Cell line", ("todo",), False),
@@ -194,6 +194,7 @@ if __name__ == "__main__":
     if P.input_xml and P.term:
         sys.stderr.write("Please use either a xml file or search terms as input")
         exit(1)
+    # Email is required for e-utils
     if P.term and not P.email:
         sys.stderr.write("Email is required for querying Entrez")
         exit(1)
@@ -244,7 +245,7 @@ if __name__ == "__main__":
 
         # Retrieve all ids
         ids = GetIdList(term=" ".join(P.term))
-        if len(ids) > ESEARCH_MAX:
+        if len(ids) > ESEARCH_MAX and not P.unlimited:
             sys.stderr.write("Query returned too many results (%s). Please consider refine you search or use -u option" % len(ids))
             exit(1)
 

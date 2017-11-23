@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# All the xml records in this file were collected from NCBI SRA database.
+
 TEST_XML = """
 <?xml version="1.0" encoding="UTF-8"?>
 <EXPERIMENT_PACKAGE_SET>
