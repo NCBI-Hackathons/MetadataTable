@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import io
+import re
 import sys
 import csv
 import time
@@ -51,11 +52,11 @@ parser.add_argument("-u", "--unlimited",
                     action="store_true",
                     help="Retrieve unlimited records")
 
-parser.add_argument("-c", "--case",
-                    type=str,
-                    default="rnaseq",
-                    choices=("rnaseq", "source"),
-                    help="Select which builtin case to use")
+# parser.add_argument("-c", "--case",
+#                     type=str,
+#                     default="rnaseq",
+#                     choices=("rnaseq", "source"),
+#                     help="Select which builtin case to use")
 
 parser.add_argument("-f", "--full",
                     action="store_true",
@@ -66,30 +67,87 @@ parser.add_argument("-x", "--xpath",
                     help="Path to a csv file for xpath query")
 
 # ============================================================================ #
+SHOW = True
+HIDE = False
+TEXT = False
+
 BUILTIN_XPATH = {
     "rnaseq": [
-        ("SRA run accession", ("//RUN_SET/RUN", "accession"), True),
-        ("SRA experiment accession", ("//EXPERIMENT", "accession", "accession"), True),
-        ("Biosample accession (1-to-1 with SRA sample accession when both exist)", ("//IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", None), True),
-        ("Tissue", ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue']/VALUE|//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue source']/VALUE|//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='OrganismPart']/VALUE", None), True),
-        ("Strain", ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='strain']/VALUE", None), True),
-        ("Development Stage", ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='developmental stage']/VALUE|//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='DevelopmentalStage']/VALUE", None), True),
-        ("SRA project accession", ("//STUDY_REF", "accession"), True),
-        ("Base count of run", ("//RUN", "total_bases"), True),
-        ("Paired-end flag", ("//PAIRED", "*"), True),
-        ("Spot count of run", ("//RUN", "total_spots"), True),
-        ("Platform (eg Illumina)", ("//PLATFORM/*/*|//PLATFORM/*", None), True),
-        ("SRA sample accession", ("//SAMPLE", "accession"), False),
-        # ("Taxid", ("todo",), False),
-        # ("Library source", ("todo",), False),
-        # ("Cell line", ("todo",), False),
-        # ("Sample title", ("todo",), False),
-        # ("Source Provider", ("todo",), False),
-        # ("Study description", ("todo",), False),
+        # Accessions
+        (SHOW, "Project Accession", (("//STUDY_REF/IDENTIFIERS/PRIMARY_ID", TEXT),)),  # ("//STUDY_REF", "accession")
+        (HIDE, "Project Accession (Secondary)", (
+            ("//STUDY_REF/IDENTIFIERS/EXTERNAL_ID[@namespace='BioProject']", TEXT),
+            ("//STUDY/IDENTIFIERS/EXTERNAL_ID[@namespace='BioProject']", TEXT),
+        )),
+        (SHOW, "Sample Accession", (("//SAMPLE/IDENTIFIERS/PRIMARY_ID", TEXT),)),  # ("//SAMPLE", "accession")
+        (HIDE, "Sample Accession (Secondary)", (("//SAMPLE/IDENTIFIERS/EXTERNAL_ID[@namespace='BioSample']", TEXT),)),
+        (SHOW, "Experiment Accession", (("//EXPERIMENT/IDENTIFIERS/PRIMARY_ID", TEXT),)),  # ("//EXPERIMENT", "accession")
+        (SHOW, "Run Accession", (("//RUN_SET/RUN/IDENTIFIERS/PRIMARY_ID", TEXT),)),  # ("//RUN_SET/RUN", "accession")
+
+        # Design
+        (SHOW, "Platform", (
+            ("//PLATFORM/*/*", TEXT),
+            ("//PLATFORM/*", TEXT),
+        )),
+        (SHOW, "Layout", (
+            ("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_LAYOUT/PAIRED", ("Paired", "")),
+            ("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_LAYOUT/SINGLE", ("Single", "")),
+        )),
+        (HIDE, "Library Name", (("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_NAME", TEXT),)),
+        (HIDE, "Library Strategy", (("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_STRATEGY", TEXT),)),
+        (HIDE, "Library Source", (("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_SOURCE", TEXT),)),
+        (HIDE, "Library Selection", (("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_SELECTION", TEXT),)),
+        (HIDE, "Library Construction", (("//DESIGN//LIBRARY_DESCRIPTOR//LIBRARY_CONSTRUCTION_PROTOCOL", TEXT),)),
+
+        # Study
+        (HIDE, "Study Title", (("//STUDY//DESCRIPTOR//STUDY_TITLE", TEXT),)),
+        (HIDE, "Study Type", (("//STUDY//DESCRIPTOR//STUDY_TYPE", "existing_study_type"),)),
+        (SHOW, "Study Abstract", (("//STUDY//DESCRIPTOR//STUDY_ABSTRACT", TEXT),)),
+
+        # Sample
+        (HIDE, "Sample Title", (
+            ("//SAMPLE//TITLE", TEXT),
+            ("//RUN//Pool/Member", "sample_title"),
+        )),
+        (HIDE, "Taxon Id", (("//SAMPLE//SAMPLE_NAME//TAXON_ID", TEXT),)),
+        (HIDE, "Scientific Name", (("//SAMPLE//SAMPLE_NAME//SCIENTIFIC_NAME", TEXT),)),
+        (SHOW, "Strain", (
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='strain']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='genetic background']/VALUE", TEXT),
+        )),
+        (SHOW, "Tissue", (
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue source']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='OrganismPart']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='source_name']/VALUE", TEXT),
+        )),
+        (SHOW, "Development Stage", (
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='developmental stage']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='DevelopmentalStage']/VALUE", TEXT),
+        )),
+        (HIDE, "Phenotype", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='phenotype']/VALUE", TEXT),)),
+
+        # Run
+        (SHOW, "Read Length", (("//RUN/Statistics/Read", "average"),)),
+        (SHOW, "Total Bases", (("//RUN", "total_bases"),)),
+        (SHOW, "Total Spots", (("//RUN", "total_spots"),)),
+
+        # "Cell line",
+        # "Source Provider",
     ],
-    "source": [
-    ],
+    "source": [],  # NotImplemented
 }
+
+RE_RUN = re.compile(r'(RUN\b)|(RUN\/)')
+
+
+def TransformXpath(xpath):
+    run_container = RE_RUN.search(xpath)
+    if not run_container:
+        return "./../.." + xpath
+    else:
+        return "." + xpath[run_container.end():]
+
 
 # ============================================================================ #
 ESEARCH_BATCH = 100000  # max=100,000
@@ -145,6 +203,9 @@ class BlackHole(object):
     def write(self, value):
         pass
 
+    def flush(self):
+        pass
+
 
 def Process(q, output_xml, output_tsv, names, queries):
     fx = ft = BlackHole()
@@ -177,6 +238,10 @@ def Process(q, output_xml, output_tsv, names, queries):
 
 # ============================================================================ #
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        parser.print_usage()
+        sys.exit(1)
+
     P, _ = parser.parse_known_args()
 
     # print("P.output_xml", P.output_xml)
@@ -188,16 +253,16 @@ if __name__ == "__main__":
     # print("P.case", P.case)
     # print("P.full", P.full)
     # print("P.xpath", P.xpath)
-    # exit()
+    # sys.exit(1)
 
     # Only one input mode is allowed to avoid confusion
     if P.input_xml and P.term:
         sys.stderr.write("Please use either a xml file or search terms as input")
-        exit(1)
+        sys.exit(1)
     # Email is required for e-utils
     if P.term and not P.email:
         sys.stderr.write("Email is required for querying Entrez")
-        exit(1)
+        sys.exit(1)
 
     # Set the field names and queries
     if P.xpath:
@@ -212,15 +277,17 @@ if __name__ == "__main__":
                 pass
         except Exception as e:
             sys.stderr.write("Xpath test failed. Please check the xpath file.")
-            exit(1)
+            sys.exit(1)
     else:
-        fields = BUILTIN_XPATH[P.case]
+        # fields = BUILTIN_XPATH[P.case]
+        fields = BUILTIN_XPATH["rnaseq"]
         if P.full:
-            NAMES = [row[0] for row in fields if row[2]]
-            QUERIES = [row[1] for row in fields if row[2]]
+            NAMES = [row[1] for row in fields]
+            QUERIES = [row[2] for row in fields]
         else:
-            NAMES = [row[0] for row in fields]
-            QUERIES = [row[1] for row in fields]
+            NAMES = [row[1] for row in fields if row[0]]
+            QUERIES = [row[2] for row in fields if row[0]]
+        QUERIES = [[(TransformXpath(q[0]), q[1]) for q in query] for query in QUERIES]
 
     # Input Mode 1. Read and process xml file, save parsed data to a file or print out parsed data
     if P.input_xml:
@@ -247,7 +314,7 @@ if __name__ == "__main__":
         ids = GetIdList(term=" ".join(P.term))
         if len(ids) > ESEARCH_MAX and not P.unlimited:
             sys.stderr.write("Query returned too many results (%s). Please consider refine you search or use -u option" % len(ids))
-            exit(1)
+            sys.exit(1)
 
         # Process the downloaded records in a separate thread
         q = queue.Queue()
@@ -262,4 +329,4 @@ if __name__ == "__main__":
         # Wait till all records are processed
         q.join()
 
-    exit(0)
+    sys.exit(0)
