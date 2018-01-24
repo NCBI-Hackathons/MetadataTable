@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from lxml import etree
 import re
 
@@ -47,6 +49,5 @@ def parse(file_or_string_to_parse, parse_list):
                                 value = el.text
                     if value:
                         break
-                list_of_values.append(value or "NA")
-
+                list_of_values.append(value or "-")
             yield list_of_values  # yields a list for each run

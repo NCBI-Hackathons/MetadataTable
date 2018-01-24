@@ -111,26 +111,43 @@ BUILTIN_XPATH = {
         )),
         (HIDE, "Taxon Id", (("//SAMPLE//SAMPLE_NAME//TAXON_ID", TEXT),)),
         (HIDE, "Scientific Name", (("//SAMPLE//SAMPLE_NAME//SCIENTIFIC_NAME", TEXT),)),
-        (SHOW, "Strain", (
+        (SHOW, "Strain/Cultivar", (
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='strain']/VALUE", TEXT),
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='genetic background']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='cultivar']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='ecotype']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='varieties']/VALUE", TEXT),
         )),
+        (HIDE, "Genotype", (
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='genotype']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='genotype/variation']/VALUE", TEXT),
+        )),
+        (HIDE, "Phenotype", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='phenotype']/VALUE", TEXT),)),
         (SHOW, "Tissue", (
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue']/VALUE", TEXT),
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='tissue source']/VALUE", TEXT),
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='OrganismPart']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='organism part']/VALUE", TEXT),
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='source_name']/VALUE", TEXT),
         )),
         (SHOW, "Development Stage", (
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='developmental stage']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='development stage']/VALUE", TEXT),
             ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='DevelopmentalStage']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='dev_stage']/VALUE", TEXT),
+            ("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='Stage']/VALUE", TEXT),
         )),
-        (HIDE, "Phenotype", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='phenotype']/VALUE", TEXT),)),
+        (HIDE, "Age Value", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='age']/VALUE", TEXT),)),
+        (HIDE, "Age Unit", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='age']/UNITS", TEXT),)),
+        (HIDE, "Treatment", (("//SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE[TAG='treatment']/UNITS", TEXT),)),
 
         # Run
         (SHOW, "Read Length", (("//RUN/Statistics/Read", "average"),)),
         (SHOW, "Total Bases", (("//RUN", "total_bases"),)),
         (SHOW, "Total Spots", (("//RUN", "total_spots"),)),
+
+        # Misc
+        (HIDE, "ArrayExpress ID", (("//STUDY/STUDY_ATTRIBUTES/STUDY_ATTRIBUTE[TAG='ArrayExpress']/VALUE", TEXT),)),
 
         # "Cell line",
         # "Source Provider",

@@ -14,7 +14,7 @@ Third-party efforts to load all metadata into a relational db suggest how widesp
 
 Requires python3 and python packages noted in requirements.txt
 
-To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named "testing" <br />
+To get started, git clone to subdirectory MetadataTable, and create a working subdirectory named "testing" <br/>
 ``` virtualenv -p python3 testing 
  cd testing 
  source bin/activate 
@@ -22,11 +22,13 @@ To get started, git clone to subdirectory MetadataTable, and create a working su
  python3 ../MetadataTable/metadatatable.py -h  
  ```
 
+Please note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered
+
 ## Example Invocation
 
-``` Please note that this a minimal implementation, quickly written; very few informative warning messages if problems are encountered<br />
-Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version : <br />
-python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv 
+```
+Retrieve all RNA-Seq datasets for taxon 7955, save output as a tab-delimited version :
+python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(biomol_transcript[properties] OR study_type_transcriptome_analysis[properties] OR strategy_rna_seq[properties] OR strategy_FL_cDNA[properties]) AND txid7955[Organism]" -ot 7955.tsv 
 ``` 
 
 ## Usage
@@ -34,8 +36,7 @@ python3 ../MetadataTable/metadatatable.py -e <your_email> -t "(  biomol_transcri
 ```
 >python metadatatable.py -h
 usage: MetadataTable [-h] [-ox OUTPUT_XML] [-ot OUTPUT_TSV] [-i INPUT_XML]
-                     [-e EMAIL] [-t TERM [TERM ...]] [-u] [-c {rnaseq,source}]
-                     [-f] [-x XPATH]
+                     [-e EMAIL] [-t TERM [TERM ...]] [-u] [-f] [-x XPATH]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -50,8 +51,6 @@ optional arguments:
   -t TERM [TERM ...], --term TERM [TERM ...]
                         Query terms
   -u, --unlimited       Retrieve unlimited records
-  -c {rnaseq,source}, --case {rnaseq,source}
-                        Select which builtin case to use
   -f, --full            Whether to output full table (Only for builtin template)
   -x XPATH, --xpath XPATH
                         Path to a csv file for xpath query
@@ -90,10 +89,6 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
 
 **Parsing**
 
-    -c case
-    Use built-in parsing template. Choose from (rnaseq, source). Default
-    is rnaseq.
-
     -f
     For built-in parsing template only. Output the full table. It will
     be silently ignored if using user supplied xpath file.
@@ -101,9 +96,14 @@ Users can save both xml and tsv file, if filenames are given.  xml output can be
     -x xpath.csv
     If supplied, metadatatable will use read the xpath query from the
     specified csv file, and -c and -f will be silently ignored.
+    
+    -c case
+    Use built-in parsing template. Choose from (rnaseq, source). Default
+    is rnaseq. Note that "source" template is not implemented yet. This
+    argument currently is ignored.
 
 ## Contributors
 
-Tara Tufano <br />
-Lukas Wagner <br />
+Tara Tufano <br/>
+Lukas Wagner <br/>
 Yadi Zhou
