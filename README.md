@@ -1,4 +1,7 @@
 # MetadataTable
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158314.svg)](https://doi.org/10.5281/zenodo.1158314)
+
 SRA Metadata is rich, sometimes too rich. There's no single standardized location for many types of useful information. This is a generalizable framework for pulling SRA metadata and summarizing usefully, with some common use-cases ready to go.
 
 ### What's the problem?
