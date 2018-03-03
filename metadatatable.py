@@ -148,6 +148,7 @@ BUILTIN_XPATH = {
 
         # Misc
         (HIDE, "ArrayExpress ID", (("//STUDY/STUDY_ATTRIBUTES/STUDY_ATTRIBUTE[TAG='ArrayExpress']/VALUE", TEXT),)),
+        (SHOW, "Published", (("//RUN_SET/RUN", "published"),)),
 
         # "Cell line",
         # "Source Provider",
